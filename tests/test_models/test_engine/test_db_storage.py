@@ -110,5 +110,3 @@ class TestFileStorage(unittest.TestCase):
         new = models.storage.count()
         self.assertEqual(new, (old + 1))
     
-        
-    
