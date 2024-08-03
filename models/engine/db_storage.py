@@ -64,6 +64,13 @@ class DBStorage:
         if obj is not None:
             self.__session.delete(obj)
 
+    def get(self, cls, id):
+        """Retrieves one object by its ID."""
+        if cls in self.classes and id and isinstance(id, str):
+            all_objects = self.all(cls)
+            return all_objects.get(id)  # Use dictionary lookup for efficiency
+        return None        
+
     def reload(self):
         """reloads data from the database"""
         Base.metadata.create_all(self.__engine)
