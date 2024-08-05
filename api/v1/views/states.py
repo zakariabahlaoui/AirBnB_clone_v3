@@ -58,8 +58,7 @@ def create_state():
     else:
         data_state = State(**data_state)
         data_state.save()
-
-    # return the new state object with CREATED status code 201
+        
     return make_response(jsonify(data_state.to_dict()), 201)
 
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
