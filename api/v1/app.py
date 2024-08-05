@@ -2,7 +2,7 @@
 """This file defines the Flask application for the Airbnb clone API."""
 
 from os import getenv
-from flask import Flask
+from flask import Flask, jsonify, make_response
 from models import storage
 from api.v1.views import app_views
 
@@ -20,6 +20,14 @@ def teardown_app(exception):
         exception: An exception that occurred during request processing.
     """
     storage.close()
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    '''
+        Returns a JSON-formatted error response
+    '''
+    return jsonify({"error": "Not found"}), 404
 
 
 if __name__ == "__main__":
