@@ -1,20 +1,26 @@
 #!/usr/bin/python3
-""" This file defines the Flask application for the Airbnb clone API."""
+"""This file defines the Flask application for the Airbnb clone API."""
 
 from os import getenv
-from flask import Flask, jsonify, make_response
+from flask import Flask
 from models import storage
 from api.v1.views import app_views
 
-app = Flask(__name__)  
+app = Flask(__name__)
 
-# register blueprints
+# Register blueprints
 app.register_blueprint(app_views)
+
 
 @app.teardown_appcontext
 def teardown_app(exception):
-    """Handles teardown"""  
-    storage.close()  
+    """Handles teardown of the application context.
+
+    Args:
+        exception: An exception that occurred during request processing.
+    """
+    storage.close()
+
 
 if __name__ == "__main__":
     host = getenv("HBNB_API_HOST", default="0.0.0.0")
