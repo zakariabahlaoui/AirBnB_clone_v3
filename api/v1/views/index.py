@@ -20,7 +20,7 @@ def api_status():
     return jsonify({"status": "OK"})
 
 
-@app_views.route("/stats", strict_slashes=False)
+@app_views.route('/stats', methods=['GET'], strict_slashes=False)
 def count_each_obj():
     """Retrieves the number of each object by type.
 
