@@ -8,7 +8,7 @@ from models.state import State
 
 
 @app_views.route("/states", methods=["GET"], strict_slashes=False)
-def all_states():
+def get_states():
     '''
         Retrieves the list of all State objects
     '''
