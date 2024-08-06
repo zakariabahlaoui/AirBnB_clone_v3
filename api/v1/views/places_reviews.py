@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""" objects that handle all default RestFul API actions for Reviews """
+"""Reviews web route """
 from models.review import Review
 from models.place import Place
 from models.user import User
@@ -14,29 +14,29 @@ from flasgger.utils import swag_from
 @swag_from('documentation/reviews/get_reviews.yml', methods=['GET'])
 def get_reviews(place_id):
     """
-    Retrieves the list of all Review objects of a Place
+    retrieve a place reviews
     """
-    place = storage.get(Place, place_id)
+    place_r = storage.get(Place, place_id)
 
-    if not place:
+    if not place_r:
         abort(404)
 
-    reviews = [review.to_dict() for review in place.reviews]
+    reviews_p_d = [review.to_dict() for review in place_r.reviews]
 
-    return jsonify(reviews)
+    return jsonify(reviews_p_d)
 
 
 @app_views.route('/reviews/<review_id>', methods=['GET'], strict_slashes=False)
 @swag_from('documentation/reviews/get_review.yml', methods=['GET'])
 def get_review(review_id):
     """
-    Retrieves a Review object
+    retrieves a Review obj
     """
-    review = storage.get(Review, review_id)
-    if not review:
+    review_p = storage.get(Review, review_id)
+    if not review_p:
         abort(404)
 
-    return jsonify(review.to_dict())
+    return jsonify(review_p.to_dict())
 
 
 @app_views.route('/reviews/<review_id>', methods=['DELETE'],
@@ -44,15 +44,15 @@ def get_review(review_id):
 @swag_from('documentation/reviews/delete_reviews.yml', methods=['DELETE'])
 def delete_review(review_id):
     """
-    Deletes a Review Object
+    Deletes a Review Obj
     """
 
-    review = storage.get(Review, review_id)
+    review_p_ = storage.get(Review, review_id)
 
-    if not review:
+    if not review_p_:
         abort(404)
 
-    storage.delete(review)
+    storage.delete(review_p_)
     storage.save()
 
     return make_response(jsonify({}), 200)
@@ -63,11 +63,11 @@ def delete_review(review_id):
 @swag_from('documentation/reviews/post_reviews.yml', methods=['POST'])
 def post_review(place_id):
     """
-    Creates a Review
+    Creates a Review a place
     """
-    place = storage.get(Place, place_id)
+    place_np = storage.get(Place, place_id)
 
-    if not place:
+    if not place_np:
         abort(404)
 
     if not request.get_json():
@@ -76,40 +76,40 @@ def post_review(place_id):
     if 'user_id' not in request.get_json():
         abort(400, description="Missing user_id")
 
-    data = request.get_json()
-    user = storage.get(User, data['user_id'])
+    data_p = request.get_json()
+    user_p = storage.get(User, data_p['user_id'])
 
-    if not user:
+    if not user_p:
         abort(404)
 
     if 'text' not in request.get_json():
         abort(400, description="Missing text")
 
-    data['place_id'] = place_id
-    instance = Review(**data)
-    instance.save()
-    return make_response(jsonify(instance.to_dict()), 201)
+    data_p['place_id'] = place_id
+    inst = Review(**data_p)
+    inst.save()
+    return make_response(jsonify(inst.to_dict()), 201)
 
 
 @app_views.route('/reviews/<review_id>', methods=['PUT'], strict_slashes=False)
 @swag_from('documentation/reviews/put_reviews.yml', methods=['PUT'])
 def put_review(review_id):
     """
-    Updates a Review
+    Updates a Review a placwe
     """
-    review = storage.get(Review, review_id)
+    review_p = storage.get(Review, review_id)
 
-    if not review:
+    if not review_p:
         abort(404)
 
     if not request.get_json():
         abort(400, description="Not a JSON")
 
-    ignore = ['id', 'user_id', 'place_id', 'created_at', 'updated_at']
+    ignore_key = ['id', 'user_id', 'place_id', 'created_at', 'updated_at']
 
-    data = request.get_json()
-    for key, value in data.items():
-        if key not in ignore:
-            setattr(review, key, value)
+    data_k = request.get_json()
+    for key, value in data_k.items():
+        if key not in ignore_key:
+            setattr(review_p, key, value)
     storage.save()
-    return make_response(jsonify(review.to_dict()), 200)
+    return make_response(jsonify(review_p.to_dict()), 200)
