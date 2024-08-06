@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 """
-This module handles all default RESTFul API actions
-for Place-Amenity objects
+all default RESTFul API actions
+for Place-Amenity obj
 """
 
 from os import environ
-from flask import abort, jsonify, make_response, request
+from flask import abort, jsonify, make_response
 from api.v1.views import app_views
 from models import storage
 from models.amenity import Amenity
@@ -16,20 +16,20 @@ from models.place import Place
     "/places/<place_id>/amenities", methods=["GET"], strict_slashes=False
 )
 def get_place_amenities(place_id):
-    """Retrieves the list of all Amenity objects of a Place"""
+    """Retrieves the list of all Amenity obje"""
     # check if place exists
-    place = storage.get(Place, place_id)
-    if place is None:
+    place_d_a = storage.get(Place, place_id)
+    if place_d_a is None:
         abort(404)
 
     if environ.get("HBNB_TYPE_STORAGE") == "db":
-        amenities = [obj.to_dict() for obj in place.amenities]
+        amen_d = [obj.to_dict() for obj in place_d_a.amenities]
     else:  # file storage
-        amenities = [
+        amen_d = [
             storage.get(Amenity, amenity_id).to_dict()
-            for amenity_id in place.amenity_ids
+            for amenity_id in place_d_a.amenity_ids
         ]
-    return jsonify(amenities)
+    return jsonify(amen_d)
 
 
 @app_views.route(
@@ -38,28 +38,24 @@ def get_place_amenities(place_id):
     strict_slashes=False,
 )
 def delete_place_amenity(place_id, amenity_id):
-    """Retrieves the list of all Amenity objects of a Place"""
+    """Retrieves the list all obj"""
 
-    # check if place exists
-    place = storage.get(Place, place_id)
-    if place is None:
+    place_d_a = storage.get(Place, place_id)
+    if place_d_a is None:
         abort(404)
 
-    # check if amenity exists
-    amenity = storage.get(Amenity, amenity_id)
-    if amenity is None:
+    amen_a = storage.get(Amenity, amenity_id)
+    if amen_a is None:
         abort(404)
 
     if environ.get("HBNB_TYPE_STORAGE") == "db":
-        # check if amenity belongs to that place
-        if amenity not in place.amenities:
+        if amen_a not in place_d_a.amenities:
             abort(404)
-        place.amenities.remove(amenity)
-    else:  # file storage
-        # check if amenity belongs to that place
-        if amenity_id not in place.amenity_ids:
+        place_d_a.amenities.remove(amen_a)
+    else:
+        if amenity_id not in place_d_a.amenity_ids:
             abort(404)
-        place.amenity_ids.remove(amenity_id)
+        place_d_a.amenity_ids.remove(amenity_id)
 
     storage.save()
 
@@ -72,28 +68,25 @@ def delete_place_amenity(place_id, amenity_id):
     strict_slashes=False,
 )
 def post_place_amenity(place_id, amenity_id):
-    """Link an Amenity object to a Place"""
-    # check if place exists
-    place = storage.get(Place, place_id)
-    if place is None:
+    """Link  Amenity obj"""
+    plac_a = storage.get(Place, place_id)
+    if plac_a is None:
         abort(404)
 
-    # check if amenity exists
-    amenity = storage.get(Amenity, amenity_id)
-    if amenity is None:
+    amen_d = storage.get(Amenity, amenity_id)
+    if amen_d is None:
         abort(404)
 
     if environ.get("HBNB_TYPE_STORAGE") == "db":
-        # amenity is already linked to the Place
-        if amenity in place.amenities:
-            return make_response(jsonify(amenity.to_dict()), 200)
+        if amen_d in plac_a.amenities:
+            return make_response(jsonify(amen_d.to_dict()), 200)
         else:
-            place.amenities.append(amenity)
-    else:  # file storage
-        if amenity_id in place.amenity_ids:
-            return make_response(jsonify(amenity.to_dict()), 200)
+            plac_a.amenities.append(amen_d)
+    else:
+        if amenity_id in plac_a.amenity_ids:
+            return make_response(jsonify(amen_d.to_dict()), 200)
         else:
-            place.amenity_ids.append(amenity_id)
+            plac_a.amenity_ids.append(amenity_id)
 
     storage.save()
-    return make_response(jsonify(amenity.to_dict()), 201)
+    return make_response(jsonify(amen_d.to_dict()), 201)
